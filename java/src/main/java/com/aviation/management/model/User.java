@@ -2,6 +2,7 @@ package com.aviation.management.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -12,19 +13,27 @@ public class User {
    private String username;
    @JsonIgnore
    private String password;
+   private String role;
+   private LocalDateTime createdAt;
+   private LocalDateTime updatedAt;
    @JsonIgnore
    private boolean activated;
    private Set<Authority> authorities = new HashSet<>();
 
-   public User() { }
+   public User() {}
 
-   public User(int id, String username, String password, String authorities) {
+   public User(int id, String username, String password, String role, Set<Authority> authorities, boolean activated) {
       this.id = id;
       this.username = username;
       this.password = password;
-      if (authorities != null) this.setAuthorities(authorities);
-      this.activated = true;
+      this.role = role;
+      this.authorities = authorities != null ? authorities : new HashSet<>();
+      this.activated = activated;
+      this.createdAt = LocalDateTime.now();
+      this.updatedAt = LocalDateTime.now();
    }
+
+   // Getters and Setters
 
    public int getId() {
       return id;
@@ -50,6 +59,30 @@ public class User {
       this.password = password;
    }
 
+   public String getRole() {
+      return role;
+   }
+
+   public void setRole(String role) {
+      this.role = role;
+   }
+
+   public LocalDateTime getCreatedAt() {
+      return createdAt;
+   }
+
+   public void setCreatedAt(LocalDateTime createdAt) {
+      this.createdAt = createdAt;
+   }
+
+   public LocalDateTime getUpdatedAt() {
+      return updatedAt;
+   }
+
+   public void setUpdatedAt(LocalDateTime updatedAt) {
+      this.updatedAt = updatedAt;
+   }
+
    public boolean isActivated() {
       return activated;
    }
@@ -66,14 +99,6 @@ public class User {
       this.authorities = authorities;
    }
 
-   public void setAuthorities(String authorities) {
-      String[] roles = authorities.split(",");
-      for (String role : roles) {
-         String authority = role.contains("ROLE_") ? role : "ROLE_" + role;
-         this.authorities.add(new Authority(authority));
-      }
-   }
-
    @Override
    public boolean equals(Object o) {
       if (this == o) return true;
@@ -83,12 +108,15 @@ public class User {
               activated == user.activated &&
               Objects.equals(username, user.username) &&
               Objects.equals(password, user.password) &&
-              Objects.equals(authorities, user.authorities);
+              Objects.equals(role, user.role) &&
+              Objects.equals(authorities, user.authorities) &&
+              Objects.equals(createdAt, user.createdAt) &&
+              Objects.equals(updatedAt, user.updatedAt);
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash(id, username, password, activated, authorities);
+      return Objects.hash(id, username, password, role, activated, authorities, createdAt, updatedAt);
    }
 
    @Override
@@ -96,8 +124,11 @@ public class User {
       return "User{" +
               "id=" + id +
               ", username='" + username + '\'' +
+              ", role='" + role + '\'' +
               ", activated=" + activated +
               ", authorities=" + authorities +
+              ", createdAt=" + createdAt +
+              ", updatedAt=" + updatedAt +
               '}';
    }
 }

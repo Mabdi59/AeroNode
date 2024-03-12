@@ -6,51 +6,53 @@ DROP TABLE IF EXISTS Flights;
 DROP TABLE IF EXISTS Aircraft;
 DROP TABLE IF EXISTS users;
 
--- Create users table
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password_hash VARCHAR(200) NOT NULL,
-    role VARCHAR(50) NOT NULL
+    password_hash VARCHAR(255) NOT NULL, 
+    role VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, 
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP 
 );
 
--- Create Aircraft table
 CREATE TABLE Aircraft (
     AircraftID SERIAL PRIMARY KEY,
     RegistrationNumber VARCHAR(20) NOT NULL UNIQUE,
     Model VARCHAR(50) NOT NULL,
-    Manufacturer VARCHAR(50),
-    Capacity INT
+    Manufacturer VARCHAR(50) NOT NULL, 
+    Capacity INT NOT NULL, 
+    YearOfManufacture INT,
+    LastServiceDate TIMESTAMP WITH TIME ZONE 
 );
 
--- Create Flights table
 CREATE TABLE Flights (
     FlightID SERIAL PRIMARY KEY,
     FlightNumber VARCHAR(10) NOT NULL UNIQUE,
     DepartureAirport VARCHAR(50) NOT NULL,
     ArrivalAirport VARCHAR(50) NOT NULL,
-    DepartureTime TIMESTAMP NOT NULL,
-    ArrivalTime TIMESTAMP NOT NULL,
-    AircraftID INT REFERENCES Aircraft(AircraftID) ON DELETE SET NULL
+    DepartureTime TIMESTAMP WITH TIME ZONE NOT NULL,
+    ArrivalTime TIMESTAMP WITH TIME ZONE NOT NULL,
+    AircraftID INT REFERENCES Aircraft(AircraftID) ON DELETE SET NULL,
+    Status VARCHAR(20) DEFAULT 'Scheduled'
 );
 
--- Create Passengers table
 CREATE TABLE Passengers (
     PassengerID SERIAL PRIMARY KEY,
     FirstName VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
-    Email VARCHAR(100),
-    PhoneNumber VARCHAR(20)
+    Email VARCHAR(100) UNIQUE, 
+    PhoneNumber VARCHAR(20),
+    DateOfBirth DATE 
 );
 
--- Create Tickets table
 CREATE TABLE Tickets (
     TicketID SERIAL PRIMARY KEY,
     FlightID INT REFERENCES Flights(FlightID) ON DELETE CASCADE,
     PassengerID INT REFERENCES Passengers(PassengerID) ON DELETE CASCADE,
-    BookingTime TIMESTAMP DEFAULT NOW(),
+    BookingTime TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     SeatNumber VARCHAR(10),
-    Price DECIMAL(10, 2)
+    Price DECIMAL(10, 2),
+    Status VARCHAR(20) DEFAULT 'Booked' 
 );
 
 COMMIT;

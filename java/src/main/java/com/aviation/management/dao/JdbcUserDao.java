@@ -1,5 +1,6 @@
 package com.aviation.management.dao;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -93,8 +94,16 @@ public class JdbcUserDao implements UserDao {
         user.setId(rs.getInt("user_id"));
         user.setUsername(rs.getString("username"));
         user.setPassword(rs.getString("password_hash"));
-        user.setAuthorities(Objects.requireNonNull(rs.getString("role")));
+        user.setRole(rs.getString("role"));
         user.setActivated(true);
+        Timestamp createdAtTimestamp = rs.getTimestamp("created_at");
+        Timestamp updatedAtTimestamp = rs.getTimestamp("updated_at");
+        if (createdAtTimestamp != null) {
+            user.setCreatedAt(createdAtTimestamp.toLocalDateTime());
+        }
+        if (updatedAtTimestamp != null) {
+            user.setUpdatedAt(updatedAtTimestamp.toLocalDateTime());
+        }
         return user;
     }
 }
